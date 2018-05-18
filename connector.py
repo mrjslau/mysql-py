@@ -22,19 +22,22 @@ def connect():
                 create_table(cursor, 'reviewers')
                 ans = 1
                 while ans != 0:
-                    ans = input('1 - print, 2 - add data, 3 - delete row, 4 - drop table, 0 - exit: ')
+                    ans = input('1 - print, 2 - add data, 3 - delete row, 4 - delete all rows, 5 - drop table, 0 - exit: ')
                     if ans == '1':
                         print_rows(cursor, 'reviewers')
                     elif ans == '2':
                         add_data(cursor, 'reviewers')
                     elif ans == '3':
-                        pass
+                        print_rows(cursor)
+                        row = int(input('Enter id of row: '))
+                        delete_row(cursor, row)
+                        print_rows(cursor)
                     elif ans == '4':
-                        drop_table(cursor, 'reviewers')
-                        print('Table dropped.')
-                        ans = 0
+                        delete_all_rows(cursor)
                     else:
-                        ans = 0
+                        print('Table dropped.')
+                        break
+                drop_table(cursor, 'reviewers')
         else:
             print('connection failed.')
         
@@ -42,7 +45,6 @@ def connect():
         print(error)
  
     finally:
-        drop_table(cursor, 'reviewers')
         conn.close()
         print('Connection closed.')
 
@@ -50,14 +52,13 @@ def iter_row(cursor, size=10):
     while True:
         rows = cursor.fetchmany(size)
         if not rows:
-            print('Empty table')
             break
         for row in rows:
             yield row
 
 def print_rows(cursor, name='reviewers'):
     #-------fetchmany()------
-    cursor.execute("SELECT * FROM '%s'", (name,))
+    cursor.execute("SELECT * FROM `reviewers`")
  
     for row in iter_row(cursor, 10):
         print(row)    
@@ -77,7 +78,11 @@ def add_data(cursor, name='reviewers'):
                       (2,'Olive','Wellwood ',NULL)""")
 
 def delete_row(cursor, id, name='reviewers'):
-    pass
+    query = "DELETE FROM `reviewers` WHERE id = %s"
+    cursor.execute(query, (id,))
+
+def delete_all_rows(cursor, name='reviewers'):
+    cursor.execute("TRUNCATE TABLE `reviewers`")
 
 def drop_table(cursor, name='reviewers'):
     cursor.execute("DROP TABLE `reviewers`;")

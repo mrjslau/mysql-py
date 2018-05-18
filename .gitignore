@@ -1,0 +1,6 @@
+# Ignore the following
+.DS_Store
+*.ini
+__pycache__/
+*.pyc
+.vscode

@@ -16,7 +16,7 @@ def connect():
             #Sukuriame nauja MySQLCursor objekta
             cursor = conn.cursor()
 
-            ans = input('Would you like to create a new table?(y + *table_name*/n): ')
+            ans = input('Would you like to create a new table?(y/n): ')
            
             if ans == 'y':
                 create_table(cursor, 'reviewers')
@@ -64,26 +64,31 @@ def print_rows(cursor, name='reviewers'):
         print(row)    
 
 def create_table(cursor, name='reviewers'):
-    cursor.execute("""CREATE TABLE `reviewers` (
+    cursor.execute("""CREATE TABLE IF NOT EXISTS`reviewers` (
                       `id` int(11) NOT NULL AUTO_INCREMENT,
                       `first_name` varchar(40) NOT NULL,
                       `last_name` varchar(40) NOT NULL,
                       `photo` blob,
                       PRIMARY KEY (`id`)
                       ) ENGINE=InnoDB AUTO_INCREMENT=128 DEFAULT CHARSET=latin1;""")
+    print('Table created')
 
 def add_data(cursor, name='reviewers'):
     cursor.execute("""INSERT INTO `reviewers`(`id`,`first_name`,`last_name`,`photo`)
                       VALUES (1,'Herbert','Methley ',NULL),
-                      (2,'Olive','Wellwood ',NULL)""")
+                      (2,'Olive','Wellwood ',NULL), 
+                      (3,'Craig','The Doors ',NULL)""")
+    print('Data added')
 
 def delete_row(cursor, id, name='reviewers'):
     query = "DELETE FROM `reviewers` WHERE id = %s"
     cursor.execute(query, (id,))
+    print(f'Row {id} deleted')
 
 def delete_all_rows(cursor, name='reviewers'):
     cursor.execute("TRUNCATE TABLE `reviewers`")
+    print('All rows are deleted')
 
 def drop_table(cursor, name='reviewers'):
     cursor.execute("DROP TABLE `reviewers`;")
-    print('dropped')
+    print('Dropped')
